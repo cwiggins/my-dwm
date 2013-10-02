@@ -1,0 +1,20 @@
+--- a/dwm.c	2012-01-30 18:37:40.790848908 +0200
++++ b/dwm.c	2012-01-30 18:37:40.792848908 +0200
+@@ -1244,7 +1244,7 @@ monocle(Monitor *m) {
+ 	Client *c;
+ 
+ 	for(c = nexttiled(m->clients); c; c = nexttiled(c->next))
+-		resize(c, m->wx, m->wy, m->ww - 2 * c->bw, m->wh - 2 * c->bw, False);
++		resize(c, m->wx, m->wy, m->ww, m->wh, False);
+ }
+ 
+ void
+@@ -1399,7 +1399,7 @@ resizeclient(Client *c, int x, int y, in
+ 	c->oldy = c->y; c->y = wc.y = y;
+ 	c->oldw = c->w; c->w = wc.width = w;
+ 	c->oldh = c->h; c->h = wc.height = h;
+-	wc.border_width = c->bw;
++	wc.border_width = c->mon->lt[c->mon->sellt]->arrange == monocle && !c->isfloating ? 0 : c->bw;
+ 	XConfigureWindow(dpy, c->win, CWX|CWY|CWWidth|CWHeight|CWBorderWidth, &wc);
+ 	configure(c);
+ 	XSync(dpy, False);

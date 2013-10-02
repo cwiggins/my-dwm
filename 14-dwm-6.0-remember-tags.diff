@@ -1,0 +1,54 @@
+--- a/dwm.c	2012-01-30 18:37:40.854848912 +0200
++++ b/dwm.c	2012-01-30 18:37:40.857848912 +0200
+@@ -304,6 +304,7 @@ static Display *dpy;
+ static DC dc;
+ static Monitor *mons = NULL, *selmon = NULL;
+ static Window root;
++static Atom tagsatom;
+ 
+ /* configuration, allows nested code to access above variables */
+ #include "config.h"
+@@ -1180,8 +1181,18 @@ manage(Window w, XWindowAttributes *wa)
+ 		c->tags = t->tags;
+ 	}
+ 	else {
++		Atom atom;
++		int format;
++		unsigned long n, extra;
++		unsigned int *ptags;
+ 		c->mon = selmon;
+-		applyrules(c);
++		if(XGetWindowProperty(dpy, w, tagsatom, 0L, 1L, False, XA_CARDINAL,
++		  &atom, &format, &n, &extra, (unsigned char **)&ptags)==Success && n==1 && *ptags!=0)
++			c->tags = *ptags; /* override rule tags with memorized tags */
++		else {
++			applyrules(c);
++			XChangeProperty(dpy, w, tagsatom, XA_CARDINAL, 32, PropModeReplace, (unsigned char *)&c->tags, 1);
++		}
+ 	}
+ 	/* geometry */
+ 	c->x = c->oldx = wa->x;
+@@ -1667,6 +1678,7 @@ setup(void) {
+ 	netatom[NetWMFullscreen] = XInternAtom(dpy, "_NET_WM_STATE_FULLSCREEN", False);
+ 	netatom[NetWMWindowType] = XInternAtom(dpy, "_NET_WM_WINDOW_TYPE", False);
+ 	netatom[NetWMWindowTypeDialog] = XInternAtom(dpy, "_NET_WM_WINDOW_TYPE_DIALOG", False);
++	tagsatom = XInternAtom(dpy, "_DWM_TAGS", False);
+ 	/* init cursors */
+ 	cursor[CurNormal] = XCreateFontCursor(dpy, XC_left_ptr);
+ 	cursor[CurResize] = XCreateFontCursor(dpy, XC_sizing);
+@@ -1743,6 +1755,7 @@ void
+ tag(const Arg *arg) {
+ 	if(selmon->sel && arg->ui & TAGMASK) {
+ 		selmon->sel->tags = arg->ui & TAGMASK;
++		XChangeProperty(dpy, selmon->sel->win, tagsatom, XA_CARDINAL, 32, PropModeReplace, (unsigned char *)&selmon->sel->tags, 1);
+ 		focus(NULL);
+ 		arrange(selmon);
+ 		if(viewontag)
+@@ -1833,6 +1846,7 @@ toggletag(const Arg *arg) {
+ 		}
+ 		selmon->sel->tags = newtags;
+ 		selmon->lt[selmon->sellt] = selmon->lts[selmon->curtag];
++		XChangeProperty(dpy, selmon->sel->win, tagsatom, XA_CARDINAL, 32, PropModeReplace, (unsigned char *)&selmon->sel->tags, 1);
+ 		focus(NULL);
+ 		arrange(selmon);
+ 	}

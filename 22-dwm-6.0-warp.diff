@@ -1,0 +1,30 @@
+--- a/dwm.c	2012-01-30 18:37:40.933848917 +0200
++++ b/dwm.c	2012-01-30 18:37:40.936848917 +0200
+@@ -279,6 +279,7 @@ static void togglescratch(const Arg *arg
+ static void togglemax(const Arg *arg);
+ static void focusurgent(const Arg *arg);
+ static void savefloat(Client *c);
++static void warp(void);
+ 
+ /* variables */
+ static const char broken[] = "broken";
+@@ -978,6 +979,7 @@ focusmon(const Arg *arg) {
+ 	unfocus(selmon->sel, True);
+ 	selmon = m;
+ 	focus(NULL);
++	warp();
+ }
+ 
+ void
+@@ -2629,6 +2631,11 @@ savefloat(Client *c) {
+ 	c->sfh = c->h;
+ }
+ 
++void
++warp(void) {
++	XWarpPointer(dpy, None, root, 0, 0, 0, 0, selmon->wx + selmon->ww / 2, selmon->wy + selmon->wh / 2);
++}
++
+ int
+ main(int argc, char *argv[]) {
+ 	if(argc == 2 && !strcmp("-v", argv[1]))

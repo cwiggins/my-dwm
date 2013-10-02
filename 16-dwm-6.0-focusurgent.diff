@@ -1,0 +1,43 @@
+--- a/dwm.c	2012-01-30 18:37:40.874848913 +0200
++++ b/dwm.c	2012-01-30 18:37:40.876848913 +0200
+@@ -273,6 +273,7 @@ static void gaplessgrid(Monitor *m);
+ static void pidgin(Monitor *m);
+ static void togglescratch(const Arg *arg);
+ static void togglemax(const Arg *arg);
++static void focusurgent(const Arg *arg);
+ 
+ /* variables */
+ static const char broken[] = "broken";
+@@ -2506,6 +2507,32 @@ togglemax(const Arg *arg) {
+ 	}
+ }
+ 
++void
++focusurgent(const Arg *arg) {
++	Client *c;
++	Monitor *m;
++	unsigned int i;
++
++	for(m = mons; m; m = m->next) {
++		for(c = m->clients; c; c = c->next) {
++			if(c->isurgent) {
++				selmon = m;
++				if(!ISVISIBLE(c)) {
++					selmon->seltags ^= 1;
++					selmon->tagset[selmon->seltags] = c->tags;
++					selmon->prevtag = selmon->curtag;
++					for(i=0; !(c->tags & 1 << i); i++);
++					selmon->curtag = i + 1;
++					selmon->lt[selmon->sellt] = selmon->lts[selmon->curtag];
++				}
++				focus(c);
++				arrange(selmon);
++				return;
++			}
++		}
++	}
++}
++
+ int
+ main(int argc, char *argv[]) {
+ 	if(argc == 2 && !strcmp("-v", argv[1]))

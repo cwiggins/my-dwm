@@ -1,0 +1,22 @@
+diff --git a/dwm.c b/dwm.c
+index dd7cb4e..b16d1b0 100644
+--- a/dwm.c
++++ b/dwm.c
+@@ -805,7 +805,7 @@ drawbar(Monitor *m) {
+ 		snprintf(m->ltsymbol, sizeof m->ltsymbol, "[%d/%d]", s, a);
+ 	}
+ 	dc.w = blw = textnw(m->ltsymbol, strlen(m->ltsymbol));
+-	drawtext(m->ltsymbol, dc.colors[0], False);
++	drawtext(m->ltsymbol, dc.colors[4], False);
+ 	dc.x += dc.w;
+ 	x = dc.x;
+ 	if(m->status) { /* status is only drawn on `statusmon` */
+@@ -822,7 +822,7 @@ drawbar(Monitor *m) {
+ 	if((dc.w = dc.x - x) > bh) {
+ 		dc.x = x;
+ 		if(m->sel) {
+-			col = dc.colors[ m == selmon ? 1 : 0 ];
++			col = dc.colors[ m == selmon ? 5 : 0 ];
+ 			drawtext(m->sel->name, col, True);
+ 			drawsquare(m->sel->isfixed, m->sel->isfloating, col);
+ 		}

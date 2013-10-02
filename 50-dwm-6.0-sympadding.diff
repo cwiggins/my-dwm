@@ -1,0 +1,29 @@
+diff --git a/dwm.c b/dwm.c
+index ea8f8b8..64441ef 100644
+--- a/dwm.c
++++ b/dwm.c
+@@ -793,6 +793,7 @@ drawbar(Monitor *m) {
+ 	unsigned int i, occ = 0, urg = 0;
+ 	unsigned long *col;
+ 	unsigned int a = 0, s = 0;
++	char ltsymbol[sizeof m->ltsymbol];
+ 	Client *c;
+ 
+ 	for(c = m->clients; c; c = c->next) {
+@@ -814,10 +815,13 @@ drawbar(Monitor *m) {
+ 				s = a;
+ 		if(!s && a)
+ 			s = a;
+-		snprintf(m->ltsymbol, sizeof m->ltsymbol, "[%d/%d]", s, a);
++		snprintf(ltsymbol, sizeof ltsymbol, " %s [%d/%d] ", m->ltsymbol, s, a);
+ 	}
+-	dc.w = blw = textnw(m->ltsymbol, strlen(m->ltsymbol));
+-	drawtext(m->ltsymbol, dc.colors[4], False);
++	else {
++		snprintf(ltsymbol, sizeof ltsymbol, " %s ", m->ltsymbol);
++	}
++	dc.w = blw = textnw(ltsymbol, strlen(ltsymbol));
++	drawtext(ltsymbol, dc.colors[4], False);
+ 	dc.x += dc.w;
+ 	x = dc.x;
+ 	if(m->status) { /* status is only drawn on `statusmon` */
